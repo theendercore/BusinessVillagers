@@ -1,6 +1,6 @@
 package net.marum.villagebusiness.villager;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 public class BusinessRecord {
 	private String itemId;
@@ -11,7 +11,7 @@ public class BusinessRecord {
 		this.timestamp = pTimestamp;
 	}
 
-	public BusinessRecord(NbtCompound nbt) {
+	public BusinessRecord(CompoundTag nbt) {
 		this.itemId = nbt.getString("itemId");
 		this.timestamp = nbt.getLong("timestamp");
 	}
@@ -30,8 +30,8 @@ public class BusinessRecord {
 		return this.timestamp;
 	}
 
-	public NbtCompound toNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
+	public CompoundTag toNbt() {
+		CompoundTag nbtCompound = new CompoundTag();
 		nbtCompound.putString("itemId", this.itemId);
 		nbtCompound.putLong("timestamp", this.timestamp);
 		return nbtCompound;

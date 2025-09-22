@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 import net.marum.villagebusiness.VillageBusiness;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.ItemLike;
 
 import static net.marum.villagebusiness.VillageBusiness.SERVER;
 
@@ -446,7 +446,7 @@ public class ItemPrices {
           int saleChance = Integer.parseInt(parts[2]);
           int requestChance = Integer.parseInt(parts[3]);
           int cooldown = Integer.parseInt(parts[4]);
-          addPrice(map, Registries.ITEM.get(new Identifier(key)), price, amount, saleChance, requestChance, cooldown);
+          addPrice(map, BuiltInRegistries.ITEM.get(new ResourceLocation(key)), price, amount, saleChance, requestChance, cooldown);
         }
       }
 
@@ -457,33 +457,33 @@ public class ItemPrices {
   }
 
   private static void addPrice(Map<Item, ItemPrice> prices, TagKey<Item> tag, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
-    for (RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(tag)) {
+    for (Holder<Item> registryEntry : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
       prices.put(registryEntry.value(), new ItemPrice((Item)registryEntry.value(), price, sellAmount, saleChance, requestChance, cooldown));
     }
   }
 
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemConvertible item, int price) {
+  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price) {
     Item item2 = item.asItem();
         prices.put(item2, new ItemPrice((Item)item, price));
   }
 
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemConvertible item, int price, int sellAmount) {
+  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount) {
     Item item2 = item.asItem();
         prices.put(item2, new ItemPrice((Item)item, price, sellAmount));
   }
 
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemConvertible item, int price, int sellAmount, int saleChance) {
+  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount, int saleChance) {
     Item item2 = item.asItem();
         prices.put(item2, new ItemPrice((Item)item, price, sellAmount, saleChance));
   }
 
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemConvertible item, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
+  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
     Item item2 = item.asItem();
         prices.put(item2, new ItemPrice((Item)item, price, sellAmount, saleChance, requestChance, cooldown));
   }
 
-  private static void addPriceBulk(Map<Item, ItemPrice> prices, List<ItemConvertible> items, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
-    for (ItemConvertible item : items) {
+  private static void addPriceBulk(Map<Item, ItemPrice> prices, List<ItemLike> items, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
+    for (ItemLike item : items) {
       Item item2 = item.asItem();
         prices.put(item2, new ItemPrice((Item)item, price, sellAmount, saleChance, requestChance, cooldown));
     }
@@ -491,17 +491,17 @@ public class ItemPrices {
 
   private static void getAllRecipes(Map<Item, ItemPrice> map) {
     if (SERVER == null) return;
-    DynamicRegistryManager registryManager = SERVER.getRegistryManager();
+    RegistryAccess registryManager = SERVER.registryAccess();
 
     List<String> itemsWithoutPrice = new ArrayList<String>();
-    for (Identifier id : Registries.ITEM.getIds()) {
+    for (ResourceLocation id : BuiltInRegistries.ITEM.keySet()) {
       itemsWithoutPrice.add(id.toString());
     }
 
     Map<Item, ItemPrice> primeProducts = new HashMap<Item, ItemPrice>();
     for (Map.Entry<Item, ItemPrice> entry : map.entrySet()) {
       primeProducts.put(entry.getKey(), entry.getValue());
-      String id = Registries.ITEM.getId(entry.getKey()).toString();
+      String id = BuiltInRegistries.ITEM.getKey(entry.getKey()).toString();
       if (itemsWithoutPrice.contains(id)) {
         itemsWithoutPrice.remove(id);
       }
@@ -514,8 +514,8 @@ public class ItemPrices {
 
     while (stillNeedRecipes && safety < 5) {
       stillNeedRecipes = false;
-      for (Recipe<?> recipe : recipeManager.values()) {
-        ItemStack output = recipe.getOutput(registryManager);
+      for (Recipe<?> recipe : recipeManager.getRecipes()) {
+        ItemStack output = recipe.getResultItem(registryManager);
         if (map.containsKey(output.getItem())) {
           continue;
         }
@@ -537,7 +537,7 @@ public class ItemPrices {
           boolean ingredientHasPrice = false;
           float cheapestIngredient = 99999999;
           if (!ingredient.isEmpty()) {
-            for (ItemStack stack : ingredient.getMatchingStacks()) {
+            for (ItemStack stack : ingredient.getItems()) {
               if (map.containsKey(stack.getItem())) {
                 ItemPrice itemPrice = map.get(stack.getItem());
                 float ingredientCost = 1.0f*itemPrice.getPrice(1)/itemPrice.getSellAmount(1);
@@ -576,7 +576,7 @@ public class ItemPrices {
             }
             if (!map.containsKey(outputItem) || (Math.round(totalIngredientCost) < map.get(outputItem).getPrice(1)/map.get(outputItem).getSellAmount(1))) {
               map.put(outputItem, new ItemPrice(outputItem, Math.round(totalIngredientCost), sellAmount, minIngredientSaleChance, minIngredientRequestChance, maxIngredientCooldown));
-              String id = Registries.ITEM.getId(outputItem).toString();
+              String id = BuiltInRegistries.ITEM.getKey(outputItem).toString();
               if (itemsWithoutPrice.contains(id)) {
                 itemsWithoutPrice.remove(id);
               }

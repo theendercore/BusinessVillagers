@@ -1,12 +1,12 @@
 package net.marum.villagebusiness.util;
 
-import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.world.entity.npc.Villager;
 
 public class VillagerLure {
-    public VillagerEntity villager;
+    public Villager villager;
     public double expirationTimestamp;
 
-    public VillagerLure(VillagerEntity newVillager, int expiresInSeconds) {
+    public VillagerLure(Villager newVillager, int expiresInSeconds) {
         villager = newVillager;
         expirationTimestamp = System.currentTimeMillis() + expiresInSeconds*1000;
     }

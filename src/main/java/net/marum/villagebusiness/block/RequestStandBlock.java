@@ -4,83 +4,83 @@ import org.jetbrains.annotations.Nullable;
 
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class RequestStandBlock extends BlockWithEntity {
+public class RequestStandBlock extends BaseEntityBlock {
 
-    public RequestStandBlock(Settings settings) {
+    public RequestStandBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(Properties.POWERED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.POWERED, false));
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.POWERED);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(BlockStateProperties.POWERED);
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!world.isClient()) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!world.isClientSide()) {
             if (world.getBlockEntity(pos) instanceof RequestStandBlockEntity blockEntity) {
-                NamedScreenHandlerFactory screenHandlerFactory = blockEntity;
+                MenuProvider screenHandlerFactory = blockEntity;
                 if (screenHandlerFactory != null) {
-                    player.openHandledScreen(screenHandlerFactory);
+                    player.openMenu(screenHandlerFactory);
                 }
             }
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY.instantiate(pos, state);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY.create(pos, state);
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof RequestStandBlockEntity) {
-                ItemScatterer.spawn(world, pos, (RequestStandBlockEntity)blockEntity);
-                world.updateComparators(pos,this);
+                Containers.dropContents(world, pos, (RequestStandBlockEntity)blockEntity);
+                world.updateNeighbourForOutputSignal(pos,this);
             }
-            super.onStateReplaced(state, world, pos, newState, moved);
+            super.onRemove(state, world, pos, newState, moved);
         }
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        boolean isPowered = world.isReceivingRedstonePower(pos);
-        if (state.get(Properties.POWERED) != isPowered) {
-            world.setBlockState(pos, state.with(Properties.POWERED, isPowered), 3);
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        boolean isPowered = world.hasNeighborSignal(pos);
+        if (state.getValue(BlockStateProperties.POWERED) != isPowered) {
+            world.setBlock(pos, state.setValue(BlockStateProperties.POWERED, isPowered), 3);
         }
     }
 
     @Override
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient() ? null : checkType(type, VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY, RequestStandBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return world.isClientSide() ? null : createTickerHelper(type, VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY, RequestStandBlockEntity::tick);
     }
 }

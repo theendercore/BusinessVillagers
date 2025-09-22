@@ -4,10 +4,10 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.marum.villagebusiness.VillageBusiness;
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
 import net.marum.villagebusiness.block.entity.SalesStandBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class VillageBusinessBlockEntityTypeInit {
     public static final BlockEntityType<SalesStandBlockEntity> SALES_STAND_ENTITY = register("sales_stand_entity", 
@@ -18,7 +18,7 @@ public class VillageBusinessBlockEntityTypeInit {
             .build());
 
     public static <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType<T> type) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, VillageBusiness.id(name), type);
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, VillageBusiness.id(name), type);
     }
 
     public static void load() {}

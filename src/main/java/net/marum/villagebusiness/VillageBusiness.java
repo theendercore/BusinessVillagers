@@ -9,13 +9,12 @@ import net.marum.villagebusiness.init.VillagerBusinessBlockInit;
 import net.marum.villagebusiness.init.VillagerBusinessItemInit;
 import net.marum.villagebusiness.network.VillageBusinessNetworking;
 import net.marum.villagebusiness.screen.VillageBusinessScreenHandlers;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.item.CreativeModeTabs;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ import com.mojang.serialization.Codec;
 public class VillageBusiness implements ModInitializer {
 	public static final String MOD_ID = "village_business";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static final MemoryModuleType<Long> WONT_PURCHASE_UNTIL = Registry.register(Registries.MEMORY_MODULE_TYPE, id("last_purchased"), new MemoryModuleType<>(Optional.of(Codec.LONG)));
+	public static final MemoryModuleType<Long> WONT_PURCHASE_UNTIL = Registry.register(BuiltInRegistries.MEMORY_MODULE_TYPE, id("last_purchased"), new MemoryModuleType<>(Optional.of(Codec.LONG)));
 
 	public static final SimpleConfig CONFIG = SimpleConfig.of( "villagebusiness" ).request();
 	public static MinecraftServer SERVER;
@@ -38,13 +37,13 @@ public class VillageBusiness implements ModInitializer {
 		VillagerBusinessBlockInit.load();
 		VillageBusinessBlockEntityTypeInit.load();
 		VillageBusinessScreenHandlers.load();
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> entries.add(VillagerBusinessBlockInit.SALES_STAND_BLOCK));
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> entries.add(VillagerBusinessBlockInit.REQUEST_STAND_BLOCK));
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(VillagerBusinessItemInit.EMERALD_NUGGET));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> entries.accept(VillagerBusinessBlockInit.SALES_STAND_BLOCK));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> entries.accept(VillagerBusinessBlockInit.REQUEST_STAND_BLOCK));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.INGREDIENTS).register(entries -> entries.accept(VillagerBusinessItemInit.EMERALD_NUGGET));
 		VillageBusinessNetworking.registerServerHandlers();
 	}
 
-	public static Identifier id(String path) {
-		return Identifier.of(MOD_ID, path);
+	public static ResourceLocation id(String path) {
+		return ResourceLocation.tryBuild(MOD_ID, path);
 	}
 }

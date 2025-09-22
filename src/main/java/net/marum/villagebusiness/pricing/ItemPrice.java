@@ -1,6 +1,6 @@
 package net.marum.villagebusiness.pricing;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class ItemPrice {
     private final Item item;
@@ -57,7 +57,7 @@ public class ItemPrice {
 
     public int getSellAmount(int priceSetting) {
         if (priceSetting == 0) {
-            if (price < 72 && sellAmount <= item.getMaxCount()/2) {
+            if (price < 72 && sellAmount <= item.getMaxStackSize()/2) {
                 return sellAmount*2;
             }
         }
@@ -68,7 +68,7 @@ public class ItemPrice {
     public int getPrice(int priceSetting) {
         switch (priceSetting) {
             case 0:
-                if (price < 72 && sellAmount <= item.getMaxCount()/2) {
+                if (price < 72 && sellAmount <= item.getMaxStackSize()/2) {
                     return price;
                 }
                 return price/2;
