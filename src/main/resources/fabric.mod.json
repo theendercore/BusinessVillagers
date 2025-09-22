@@ -1,12 +1,10 @@
 {
 	"schemaVersion": 1,
 	"id": "village_business",
-	"version": "${0.1}",
+	"version": "${version}",
 	"name": "Village Business",
 	"description": "Open your own business and have villagers show up and buy what you offer!",
-	"authors": [
-		"Marum_"
-	],
+	"authors": [ "Marum_", "TheEnderCore" ],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
