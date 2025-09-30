@@ -8,7 +8,7 @@ public class VillagerLure {
 
     public VillagerLure(Villager newVillager, int expiresInSeconds) {
         villager = newVillager;
-        expirationTimestamp = System.currentTimeMillis() + expiresInSeconds*1000;
+        expirationTimestamp = System.currentTimeMillis() + expiresInSeconds * 1000;
     }
 
     public boolean hasExpired() {

@@ -20,5 +20,6 @@ public class VillageBusinessScreenHandlers {
         return Registry.register(BuiltInRegistries.MENU, id(name), new ExtendedScreenHandlerType<>(item));
     }
 
-    public static void init() { }
+    public static void init() {
+    }
 }

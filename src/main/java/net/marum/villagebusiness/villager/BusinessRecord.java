@@ -3,38 +3,38 @@ package net.marum.villagebusiness.villager;
 import net.minecraft.nbt.CompoundTag;
 
 public class BusinessRecord {
-	private String itemId;
+    private String itemId;
     private Long timestamp;
 
-	public BusinessRecord(String pItemId, Long pTimestamp) {
-		this.itemId = pItemId;
-		this.timestamp = pTimestamp;
-	}
+    public BusinessRecord(String pItemId, Long pTimestamp) {
+        this.itemId = pItemId;
+        this.timestamp = pTimestamp;
+    }
 
-	public BusinessRecord(CompoundTag nbt) {
-		this.itemId = nbt.getString("itemId");
-		this.timestamp = nbt.getLong("timestamp");
-	}
-
-	/**
-	 * Returns the first buy item of this trade offer.
-	 */
-	public String getItemID() {
-		return this.itemId;
-	}
+    public BusinessRecord(CompoundTag nbt) {
+        this.itemId = nbt.getString("itemId");
+        this.timestamp = nbt.getLong("timestamp");
+    }
 
     /**
-	 * Returns the time of the purchase.
-	 */
-	public Long getTimestamp() {
-		return this.timestamp;
-	}
+     * Returns the first buy item of this trade offer.
+     */
+    public String getItemID() {
+        return this.itemId;
+    }
 
-	public CompoundTag toNbt() {
-		CompoundTag nbtCompound = new CompoundTag();
-		nbtCompound.putString("itemId", this.itemId);
-		nbtCompound.putLong("timestamp", this.timestamp);
-		return nbtCompound;
-	}
+    /**
+     * Returns the time of the purchase.
+     */
+    public Long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public CompoundTag toNbt() {
+        CompoundTag nbtCompound = new CompoundTag();
+        nbtCompound.putString("itemId", this.itemId);
+        nbtCompound.putLong("timestamp", this.timestamp);
+        return nbtCompound;
+    }
 }
 

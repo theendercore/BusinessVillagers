@@ -1,10 +1,5 @@
 package net.marum.villagebusiness.pricing;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.marum.villagebusiness.VillageBusiness;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -18,16 +13,21 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.ItemLike;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static net.marum.villagebusiness.VillageBusiness.SERVER;
 
 public class ItemPrices {
-  public static Map<Item, ItemPrice> priceList = createPriceList();
+    public static Map<Item, ItemPrice> priceList = createPriceList();
 
-  static final int NUGGET = 1;
-  static final int EMERALD = 9;
-  static final int BLOCK = 81;
+    static final int NUGGET = 1;
+    static final int EMERALD = 9;
+    static final int BLOCK = 81;
 
-  public static Map<Item, ItemPrice> createPriceList() {
+    public static Map<Item, ItemPrice> createPriceList() {
 
     /*Map<Item, ItemPrice> map = Maps.<Item, ItemPrice>newLinkedHashMap();
       // Wood
@@ -435,156 +435,156 @@ public class ItemPrices {
             e.printStackTrace();
         }*/
 
-      Map<Item, ItemPrice> map = new HashMap<Item, ItemPrice>();
+        Map<Item, ItemPrice> map = new HashMap<Item, ItemPrice>();
 
-      for (String key : VillageBusiness.CONFIG.getKeySet()) {
-        String value = VillageBusiness.CONFIG.getOrDefault(key, "");
-        String[] parts = value.split(",", 5);
-        if (parts.length == 5) {
-          int price = Integer.parseInt(parts[0]);
-          int amount = Integer.parseInt(parts[1]);
-          int saleChance = Integer.parseInt(parts[2]);
-          int requestChance = Integer.parseInt(parts[3]);
-          int cooldown = Integer.parseInt(parts[4]);
-          addPrice(map, BuiltInRegistries.ITEM.get(new ResourceLocation(key)), price, amount, saleChance, requestChance, cooldown);
-        }
-      }
-
-      // Procedurally generate missing craftable item's prices
-      getAllRecipes(map);
-
-      return map;
-  }
-
-  private static void addPrice(Map<Item, ItemPrice> prices, TagKey<Item> tag, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
-    for (Holder<Item> registryEntry : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
-      prices.put(registryEntry.value(), new ItemPrice((Item)registryEntry.value(), price, sellAmount, saleChance, requestChance, cooldown));
-    }
-  }
-
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price) {
-    Item item2 = item.asItem();
-        prices.put(item2, new ItemPrice((Item)item, price));
-  }
-
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount) {
-    Item item2 = item.asItem();
-        prices.put(item2, new ItemPrice((Item)item, price, sellAmount));
-  }
-
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount, int saleChance) {
-    Item item2 = item.asItem();
-        prices.put(item2, new ItemPrice((Item)item, price, sellAmount, saleChance));
-  }
-
-  private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
-    Item item2 = item.asItem();
-        prices.put(item2, new ItemPrice((Item)item, price, sellAmount, saleChance, requestChance, cooldown));
-  }
-
-  private static void addPriceBulk(Map<Item, ItemPrice> prices, List<ItemLike> items, int price, int sellAmount,  int saleChance, int requestChance, int cooldown) {
-    for (ItemLike item : items) {
-      Item item2 = item.asItem();
-        prices.put(item2, new ItemPrice((Item)item, price, sellAmount, saleChance, requestChance, cooldown));
-    }
-  }
-
-  private static void getAllRecipes(Map<Item, ItemPrice> map) {
-    if (SERVER == null) return;
-    RegistryAccess registryManager = SERVER.registryAccess();
-
-    List<String> itemsWithoutPrice = new ArrayList<String>();
-    for (ResourceLocation id : BuiltInRegistries.ITEM.keySet()) {
-      itemsWithoutPrice.add(id.toString());
-    }
-
-    Map<Item, ItemPrice> primeProducts = new HashMap<Item, ItemPrice>();
-    for (Map.Entry<Item, ItemPrice> entry : map.entrySet()) {
-      primeProducts.put(entry.getKey(), entry.getValue());
-      String id = BuiltInRegistries.ITEM.getKey(entry.getKey()).toString();
-      if (itemsWithoutPrice.contains(id)) {
-        itemsWithoutPrice.remove(id);
-      }
-    }
-
-    RecipeManager recipeManager = SERVER.getRecipeManager();
-    
-    boolean stillNeedRecipes = true;
-    int safety = 0;
-
-    while (stillNeedRecipes && safety < 5) {
-      stillNeedRecipes = false;
-      for (Recipe<?> recipe : recipeManager.getRecipes()) {
-        ItemStack output = recipe.getResultItem(registryManager);
-        if (map.containsKey(output.getItem())) {
-          continue;
-        }
-
-        Item outputItem = output.getItem();
-
-        if (primeProducts.containsKey(outputItem)) {
-          // Skip prime product
-          continue;
-        }
-
-        int outputCount = output.getCount();
-        float totalIngredientCost = 0f;
-        int minIngredientSaleChance = 100;
-        int minIngredientRequestChance = 100;
-        int maxIngredientCooldown = 0;
-        boolean allIngredientsHavePrices = true;
-        for (Ingredient ingredient : recipe.getIngredients()) {
-          boolean ingredientHasPrice = false;
-          float cheapestIngredient = 99999999;
-          if (!ingredient.isEmpty()) {
-            for (ItemStack stack : ingredient.getItems()) {
-              if (map.containsKey(stack.getItem())) {
-                ItemPrice itemPrice = map.get(stack.getItem());
-                float ingredientCost = 1.0f*itemPrice.getPrice(1)/itemPrice.getSellAmount(1);
-                if (ingredientCost != 0) {
-                  ingredientHasPrice = true;
-                  if (ingredientCost < cheapestIngredient) {
-                    cheapestIngredient = ingredientCost;
-                  }
-                  if (itemPrice.getSaleChance(1) < minIngredientSaleChance) {
-                    minIngredientSaleChance = itemPrice.getSaleChance(1);
-                  }
-                  if (itemPrice.getRequestChance() < minIngredientRequestChance) {
-                    minIngredientRequestChance = itemPrice.getRequestChance();
-                  }
-                  if (itemPrice.getCooldown(1) > maxIngredientCooldown) {
-                    maxIngredientCooldown = itemPrice.getCooldown(1);
-                  }
-                }
-              }
+        for (String key : VillageBusiness.CONFIG.getKeySet()) {
+            String value = VillageBusiness.CONFIG.getOrDefault(key, "");
+            String[] parts = value.split(",", 5);
+            if (parts.length == 5) {
+                int price = Integer.parseInt(parts[0]);
+                int amount = Integer.parseInt(parts[1]);
+                int saleChance = Integer.parseInt(parts[2]);
+                int requestChance = Integer.parseInt(parts[3]);
+                int cooldown = Integer.parseInt(parts[4]);
+                addPrice(map, BuiltInRegistries.ITEM.get(new ResourceLocation(key)), price, amount, saleChance, requestChance, cooldown);
             }
-            if (!ingredientHasPrice) {
-              allIngredientsHavePrices = false;
-              stillNeedRecipes = true;
-              break;
-            }
-            totalIngredientCost += cheapestIngredient;
-          }
         }
-        if (allIngredientsHavePrices) {
-          totalIngredientCost /= outputCount;
-          int sellAmount = 1;
-          if (totalIngredientCost > 0) {
-            while (totalIngredientCost < 1) {
-              sellAmount *= 2;
-              totalIngredientCost *= 2;
-            }
-            if (!map.containsKey(outputItem) || (Math.round(totalIngredientCost) < map.get(outputItem).getPrice(1)/map.get(outputItem).getSellAmount(1))) {
-              map.put(outputItem, new ItemPrice(outputItem, Math.round(totalIngredientCost), sellAmount, minIngredientSaleChance, minIngredientRequestChance, maxIngredientCooldown));
-              String id = BuiltInRegistries.ITEM.getKey(outputItem).toString();
-              if (itemsWithoutPrice.contains(id)) {
+
+        // Procedurally generate missing craftable item's prices
+        getAllRecipes(map);
+
+        return map;
+    }
+
+    private static void addPrice(Map<Item, ItemPrice> prices, TagKey<Item> tag, int price, int sellAmount, int saleChance, int requestChance, int cooldown) {
+        for (Holder<Item> registryEntry : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+            prices.put(registryEntry.value(), new ItemPrice((Item) registryEntry.value(), price, sellAmount, saleChance, requestChance, cooldown));
+        }
+    }
+
+    private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price) {
+        Item item2 = item.asItem();
+        prices.put(item2, new ItemPrice((Item) item, price));
+    }
+
+    private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount) {
+        Item item2 = item.asItem();
+        prices.put(item2, new ItemPrice((Item) item, price, sellAmount));
+    }
+
+    private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount, int saleChance) {
+        Item item2 = item.asItem();
+        prices.put(item2, new ItemPrice((Item) item, price, sellAmount, saleChance));
+    }
+
+    private static void addPrice(Map<Item, ItemPrice> prices, ItemLike item, int price, int sellAmount, int saleChance, int requestChance, int cooldown) {
+        Item item2 = item.asItem();
+        prices.put(item2, new ItemPrice((Item) item, price, sellAmount, saleChance, requestChance, cooldown));
+    }
+
+    private static void addPriceBulk(Map<Item, ItemPrice> prices, List<ItemLike> items, int price, int sellAmount, int saleChance, int requestChance, int cooldown) {
+        for (ItemLike item : items) {
+            Item item2 = item.asItem();
+            prices.put(item2, new ItemPrice((Item) item, price, sellAmount, saleChance, requestChance, cooldown));
+        }
+    }
+
+    private static void getAllRecipes(Map<Item, ItemPrice> map) {
+        if (SERVER == null) return;
+        RegistryAccess registryManager = SERVER.registryAccess();
+
+        List<String> itemsWithoutPrice = new ArrayList<String>();
+        for (ResourceLocation id : BuiltInRegistries.ITEM.keySet()) {
+            itemsWithoutPrice.add(id.toString());
+        }
+
+        Map<Item, ItemPrice> primeProducts = new HashMap<Item, ItemPrice>();
+        for (Map.Entry<Item, ItemPrice> entry : map.entrySet()) {
+            primeProducts.put(entry.getKey(), entry.getValue());
+            String id = BuiltInRegistries.ITEM.getKey(entry.getKey()).toString();
+            if (itemsWithoutPrice.contains(id)) {
                 itemsWithoutPrice.remove(id);
-              }
             }
-          }
         }
-      }
-      safety += 1;
+
+        RecipeManager recipeManager = SERVER.getRecipeManager();
+
+        boolean stillNeedRecipes = true;
+        int safety = 0;
+
+        while (stillNeedRecipes && safety < 5) {
+            stillNeedRecipes = false;
+            for (Recipe<?> recipe : recipeManager.getRecipes()) {
+                ItemStack output = recipe.getResultItem(registryManager);
+                if (map.containsKey(output.getItem())) {
+                    continue;
+                }
+
+                Item outputItem = output.getItem();
+
+                if (primeProducts.containsKey(outputItem)) {
+                    // Skip prime product
+                    continue;
+                }
+
+                int outputCount = output.getCount();
+                float totalIngredientCost = 0f;
+                int minIngredientSaleChance = 100;
+                int minIngredientRequestChance = 100;
+                int maxIngredientCooldown = 0;
+                boolean allIngredientsHavePrices = true;
+                for (Ingredient ingredient : recipe.getIngredients()) {
+                    boolean ingredientHasPrice = false;
+                    float cheapestIngredient = 99999999;
+                    if (!ingredient.isEmpty()) {
+                        for (ItemStack stack : ingredient.getItems()) {
+                            if (map.containsKey(stack.getItem())) {
+                                ItemPrice itemPrice = map.get(stack.getItem());
+                                float ingredientCost = 1.0f * itemPrice.getPrice(1) / itemPrice.getSellAmount(1);
+                                if (ingredientCost != 0) {
+                                    ingredientHasPrice = true;
+                                    if (ingredientCost < cheapestIngredient) {
+                                        cheapestIngredient = ingredientCost;
+                                    }
+                                    if (itemPrice.getSaleChance(1) < minIngredientSaleChance) {
+                                        minIngredientSaleChance = itemPrice.getSaleChance(1);
+                                    }
+                                    if (itemPrice.getRequestChance() < minIngredientRequestChance) {
+                                        minIngredientRequestChance = itemPrice.getRequestChance();
+                                    }
+                                    if (itemPrice.getCooldown(1) > maxIngredientCooldown) {
+                                        maxIngredientCooldown = itemPrice.getCooldown(1);
+                                    }
+                                }
+                            }
+                        }
+                        if (!ingredientHasPrice) {
+                            allIngredientsHavePrices = false;
+                            stillNeedRecipes = true;
+                            break;
+                        }
+                        totalIngredientCost += cheapestIngredient;
+                    }
+                }
+                if (allIngredientsHavePrices) {
+                    totalIngredientCost /= outputCount;
+                    int sellAmount = 1;
+                    if (totalIngredientCost > 0) {
+                        while (totalIngredientCost < 1) {
+                            sellAmount *= 2;
+                            totalIngredientCost *= 2;
+                        }
+                        if (!map.containsKey(outputItem) || (Math.round(totalIngredientCost) < map.get(outputItem).getPrice(1) / map.get(outputItem).getSellAmount(1))) {
+                            map.put(outputItem, new ItemPrice(outputItem, Math.round(totalIngredientCost), sellAmount, minIngredientSaleChance, minIngredientRequestChance, maxIngredientCooldown));
+                            String id = BuiltInRegistries.ITEM.getKey(outputItem).toString();
+                            if (itemsWithoutPrice.contains(id)) {
+                                itemsWithoutPrice.remove(id);
+                            }
+                        }
+                    }
+                }
+            }
+            safety += 1;
+        }
     }
-  }
 }

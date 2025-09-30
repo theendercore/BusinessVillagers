@@ -1,5 +1,6 @@
 package net.marum.villagebusiness.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.marum.villagebusiness.villager.BusinessRecordList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.npc.Villager;
@@ -9,14 +10,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.llamalad7.mixinextras.sugar.Local;
-
 @Mixin(Villager.class)
 public class VillageBusinessMixin {
 
     @Nullable
-	public BusinessRecordList businessRecords;
-	public Long lastLuredByBusiness = 0L;
+    public BusinessRecordList businessRecords;
+    public Long lastLuredByBusiness = 0L;
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     public void addCustomNBTToVillager(CallbackInfo ci, @Local CompoundTag nbt) {

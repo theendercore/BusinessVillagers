@@ -29,5 +29,6 @@ public class VillagerBusinessBlocks {
         return registered;
     }
 
-    public static void init() { }
+    public static void init() {
+    }
 }

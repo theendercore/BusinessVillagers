@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.joml.Quaternionf;
 
-public class RequestStandBlockEntityRenderer implements BlockEntityRenderer<RequestStandBlockEntity>{
+public class RequestStandBlockEntityRenderer implements BlockEntityRenderer<RequestStandBlockEntity> {
 
     private final BlockEntityRendererProvider.Context context;
     private final Quaternionf rotationMatrix = new Quaternionf(0.707f, 0f, 0f, 0.707f);
@@ -23,37 +23,37 @@ public class RequestStandBlockEntityRenderer implements BlockEntityRenderer<Requ
 
     @Override
     public void render(RequestStandBlockEntity entity, float tickDelta, PoseStack matrices,
-            MultiBufferSource vertexConsumers, int light, int overlay) {
+                       MultiBufferSource vertexConsumers, int light, int overlay) {
         int lightAbove = LevelRenderer.getLightColor(entity.getLevel(), entity.getBlockPos().above());
         Level world = entity.getLevel();
-        
+
         if (entity.getInputCount() > 0) {
             ItemStack product = entity.getItem(0);
             // Product
             int productCount = 1;
-            
+
             matrices.pushPose();
             if (product.getItem() instanceof BlockItem) {
                 productCount = 1;
                 matrices.translate(0.5f, 1.2f, 0.5f);
                 matrices.scale(0.75f, 0.75f, 0.75f);
             } else {
-                productCount = Math.min(1+entity.getInputCount()/8, 5);
+                productCount = Math.min(1 + entity.getInputCount() / 8, 5);
                 matrices.translate(0.5f, 1.04f, 0.5f);
                 matrices.scale(0.75f, 0.75f, 0.75f);
-                matrices.mulPose(rotationMatrix); 
+                matrices.mulPose(rotationMatrix);
             }
-            
+
             for (int i = 0; i < productCount; i++) {
                 this.context.getItemRenderer().renderStatic(
-                    product,
-                    ItemDisplayContext.FIXED,
-                    lightAbove,
-                    overlay,
-                    matrices,
-                    vertexConsumers,
-                    world,
-                    0
+                        product,
+                        ItemDisplayContext.FIXED,
+                        lightAbove,
+                        overlay,
+                        matrices,
+                        vertexConsumers,
+                        world,
+                        0
                 );
                 matrices.translate(0f, 0f, -0.07f);
                 matrices.mulPose(slightRotationMatrix);
@@ -72,20 +72,20 @@ public class RequestStandBlockEntityRenderer implements BlockEntityRenderer<Requ
             emeraldPile = Math.min(emeraldPile, 3);
             for (int i = 0; i < emeraldPile; i++) {
                 this.context.getItemRenderer().renderStatic(
-                    emeraldStack,
-                    ItemDisplayContext.FIXED,
-                    lightAbove,
-                    overlay,
-                    matrices,
-                    vertexConsumers,
-                    world,
-                    0
+                        emeraldStack,
+                        ItemDisplayContext.FIXED,
+                        lightAbove,
+                        overlay,
+                        matrices,
+                        vertexConsumers,
+                        world,
+                        0
                 );
                 matrices.translate(0f, 0f, -0.5f);
                 matrices.mulPose(slightRotationMatrix);
             }
             matrices.popPose();
-        } else if  (entity.getInputEmeraldCount() > 0) {
+        } else if (entity.getInputEmeraldCount() > 0) {
             ItemStack emeraldStack = entity.getItem(2);
             matrices.pushPose();
             matrices.translate(0.15f, 1.03f, 0.15f);
@@ -95,14 +95,14 @@ public class RequestStandBlockEntityRenderer implements BlockEntityRenderer<Requ
             emeraldPile = Math.min(emeraldPile, 5);
             for (int i = 0; i < emeraldPile; i++) {
                 this.context.getItemRenderer().renderStatic(
-                    emeraldStack,
-                    ItemDisplayContext.FIXED,
-                    lightAbove,
-                    overlay,
-                    matrices,
-                    vertexConsumers,
-                    world,
-                    0
+                        emeraldStack,
+                        ItemDisplayContext.FIXED,
+                        lightAbove,
+                        overlay,
+                        matrices,
+                        vertexConsumers,
+                        world,
+                        0
                 );
                 matrices.translate(0f, 0f, -0.07f);
                 matrices.mulPose(slightRotationMatrix);
@@ -118,14 +118,14 @@ public class RequestStandBlockEntityRenderer implements BlockEntityRenderer<Requ
             emeraldPile = Math.min(emeraldPile, 5);
             for (int i = 0; i < emeraldPile; i++) {
                 this.context.getItemRenderer().renderStatic(
-                    emeraldStack,
-                    ItemDisplayContext.FIXED,
-                    lightAbove,
-                    overlay,
-                    matrices,
-                    vertexConsumers,
-                    world,
-                    0
+                        emeraldStack,
+                        ItemDisplayContext.FIXED,
+                        lightAbove,
+                        overlay,
+                        matrices,
+                        vertexConsumers,
+                        world,
+                        0
                 );
                 matrices.translate(0f, 0f, -0.07f);
                 matrices.mulPose(slightRotationMatrix);

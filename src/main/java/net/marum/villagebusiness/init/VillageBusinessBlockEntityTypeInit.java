@@ -20,5 +20,6 @@ public class VillageBusinessBlockEntityTypeInit {
         return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, id(name), BlockEntityType.Builder.of(blockEntitySupplier, blocks).build(null));
     }
 
-    public static void init() { }
+    public static void init() {
+    }
 }

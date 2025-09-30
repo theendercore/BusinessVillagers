@@ -13,5 +13,6 @@ public class VillagerBusinessItems {
         return Registry.register(BuiltInRegistries.ITEM, id(name), item);
     }
 
-    public static void init() { }
+    public static void init() {
+    }
 }

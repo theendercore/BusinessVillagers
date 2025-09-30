@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class RequestStandScreenHandler extends AbstractContainerMenu{
+public class RequestStandScreenHandler extends AbstractContainerMenu {
     private final Container inventory;
     public final RequestStandBlockEntity blockEntity;
 
@@ -25,9 +25,9 @@ public class RequestStandScreenHandler extends AbstractContainerMenu{
 
     public RequestStandScreenHandler(int syncId, Inventory playerInventory, BlockEntity blockEntity) {
         super(VillageBusinessScreenHandlers.REQUEST_STAND_SCREEN_HANDLER, syncId);
-        this.inventory = (Container)blockEntity;
+        this.inventory = (Container) blockEntity;
         inventory.startOpen(playerInventory.player);
-        this.blockEntity = (RequestStandBlockEntity)blockEntity;
+        this.blockEntity = (RequestStandBlockEntity) blockEntity;
 
         this.addSlot(new NonEmeraldSlot(inventory, 0, 145, 21));
         this.addSlot(new OutputOnlySlot(inventory, 3, 15, 21, VillagerBusinessItems.EMERALD_NUGGET));

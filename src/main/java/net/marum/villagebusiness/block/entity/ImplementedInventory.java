@@ -1,8 +1,5 @@
 package net.marum.villagebusiness.block.entity;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -11,6 +8,9 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * A simple {@code SidedInventory} implementation with only default methods + an item list getter.
@@ -18,8 +18,9 @@ import net.minecraft.world.item.ItemStack;
  * <h2>Reading and writing to tags</h2>
  * Use {@link ContainerHelper#saveAllItems(CompoundTag, NonNullList)} and {@link ContainerHelper#loadAllItems(CompoundTag, NonNullList)}
  * on {@linkplain #getItems() the item list}.
- *
+ * <p>
  * License: <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+ *
  * @author Juuz
  */
 @FunctionalInterface
@@ -77,9 +78,9 @@ public interface ImplementedInventory extends WorldlyContainer {
      *
      * <p>The default implementation returns true.
      *
-     * @param slot the slot
+     * @param slot  the slot
      * @param stack the stack
-     * @param side the side
+     * @param side  the side
      * @return true if the stack can be inserted
      */
     @Override
@@ -92,9 +93,9 @@ public interface ImplementedInventory extends WorldlyContainer {
      *
      * <p>The default implementation returns true.
      *
-     * @param slot the slot
+     * @param slot  the slot
      * @param stack the stack
-     * @param side the side
+     * @param side  the side
      * @return true if the stack can be extracted
      */
     @Override
@@ -148,7 +149,7 @@ public interface ImplementedInventory extends WorldlyContainer {
      * <p>(default implementation) If there are less items in the slot than what are requested,
      * takes all items in that slot.
      *
-     * @param slot the slot
+     * @param slot  the slot
      * @param count the item count
      * @return a stack
      */
@@ -181,7 +182,7 @@ public interface ImplementedInventory extends WorldlyContainer {
      * <p>If the stack is too big for this inventory ({@link Container#getMaxStackSize()}),
      * it gets resized to this inventory's maximum amount.
      *
-     * @param slot the slot
+     * @param slot  the slot
      * @param stack the stack
      */
     @Override
