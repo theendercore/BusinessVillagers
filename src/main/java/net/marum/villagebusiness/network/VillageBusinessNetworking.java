@@ -13,7 +13,7 @@ public class VillageBusinessNetworking {
     public static final ResourceLocation REQUEST_PACKET = VillageBusiness.id("request");
 
     public static void registerServerHandlers() {
-        ServerPlayNetworking.registerGlobalReceiver(PRICE_SETTING_PACKET, (server, player, handler, buf, responseSender) -> {
+        ServerPlayNetworking.registerGlobalReceiver(PRICE_SETTING_PACKET, (server, player, _h, buf, _rs) -> {
             BlockPos pos = buf.readBlockPos();
             int value = buf.readInt();
 
@@ -25,7 +25,7 @@ public class VillageBusinessNetworking {
             });
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(REQUEST_PACKET, (server, player, handler, buf, responseSender) -> {
+        ServerPlayNetworking.registerGlobalReceiver(REQUEST_PACKET, (server, player, _h, buf, _rs) -> {
             BlockPos pos = buf.readBlockPos();
             ItemStack value = buf.readItem();
 

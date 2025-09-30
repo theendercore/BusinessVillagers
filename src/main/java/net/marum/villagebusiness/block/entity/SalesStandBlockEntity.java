@@ -10,9 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
-import net.marum.villagebusiness.init.VillagerBusinessItemInit;
+import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.network.VillageBusinessNetworking;
 import net.marum.villagebusiness.pricing.ItemPrice;
 import net.marum.villagebusiness.pricing.ItemPrices;
@@ -50,7 +49,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory, SidedStorageBlockEntity {
+public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory  {
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(4, ItemStack.EMPTY);
     private static final int INPUT_SLOT = 3;
     private static final int OUTPUT_SLOT_NUGGETS = 2;
@@ -283,7 +282,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
 
         if (resultingNuggets != outputNuggetCount) {
             outputNuggetCount = resultingNuggets;
-            this.setItem(OUTPUT_SLOT_NUGGETS, new ItemStack(VillagerBusinessItemInit.EMERALD_NUGGET, resultingNuggets));
+            this.setItem(OUTPUT_SLOT_NUGGETS, new ItemStack(VillagerBusinessItems.EMERALD_NUGGET, resultingNuggets));
         }
 
         if (resultingEmeralds != outputEmeraldCount) {
@@ -432,7 +431,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        if (stack.getItem() == Items.EMERALD || stack.getItem() == Items.EMERALD_BLOCK || stack.getItem() == VillagerBusinessItemInit.EMERALD_NUGGET)
+        if (stack.getItem() == Items.EMERALD || stack.getItem() == Items.EMERALD_BLOCK || stack.getItem() == VillagerBusinessItems.EMERALD_NUGGET)
             return false;
         return slot == INPUT_SLOT;
     }

@@ -63,8 +63,8 @@ public class SalesStandBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof SalesStandBlockEntity) {
-                Containers.dropContents(world, pos, (SalesStandBlockEntity)blockEntity);
-                world.updateNeighbourForOutputSignal(pos,this);
+                Containers.dropContents(world, pos, (SalesStandBlockEntity) blockEntity);
+                world.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, world, pos, newState, moved);
         }

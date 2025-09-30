@@ -16,9 +16,6 @@
 		"main": [
 			"net.marum.villagebusiness.VillageBusiness"
 		],
-		"fabric-datagen": [
-			"net.marum.villagebusiness.VillageBusinessDataGenerator"
-		],
 		"client": [
 			"net.marum.villagebusiness.VillageBusinessClient"
 		]

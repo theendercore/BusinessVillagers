@@ -129,6 +129,8 @@ public class SalesStandScreen extends AbstractContainerScreen<SalesStandScreenHa
 
         tooltip("village_business.chance_tip", 15, 40, 50, 12, context, mouseX, mouseY, font);
         tooltip("village_business.return_tip", 15, 54, 50, 12, context, mouseX, mouseY, font);
+
+        this.renderTooltip(context, mouseX, mouseY);
     }
 
     private void tooltip(String translationKey, int x, int y, int w, int h, GuiGraphics context, int mouseX, int mouseY, Font textRenderer) {

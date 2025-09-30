@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.marum.villagebusiness.VillageBusiness;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
-import net.marum.villagebusiness.init.VillagerBusinessItemInit;
+import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.network.VillageBusinessNetworking;
 import net.marum.villagebusiness.pricing.ItemPrice;
 import net.marum.villagebusiness.pricing.ItemPrices;
@@ -115,7 +115,7 @@ public class RequestStandBlockEntity extends BlockEntity implements ExtendedScre
     }
 
     public void setFilterItem(ItemStack stack) {
-        if (stack.getItem() == Items.EMERALD || stack.getItem() == Items.EMERALD_BLOCK || stack.getItem() == VillagerBusinessItemInit.EMERALD_NUGGET)
+        if (stack.getItem() == Items.EMERALD || stack.getItem() == Items.EMERALD_BLOCK || stack.getItem() == VillagerBusinessItems.EMERALD_NUGGET)
             return;
         this.filterItem = stack;
         updatePrices();
@@ -293,7 +293,7 @@ public class RequestStandBlockEntity extends BlockEntity implements ExtendedScre
 
         if (resultingNuggets != inputNuggetCount) {
             inputNuggetCount = resultingNuggets;
-            this.setItem(INPUT_SLOT_NUGGETS, new ItemStack(VillagerBusinessItemInit.EMERALD_NUGGET, resultingNuggets));
+            this.setItem(INPUT_SLOT_NUGGETS, new ItemStack(VillagerBusinessItems.EMERALD_NUGGET, resultingNuggets));
         }
 
         if (resultingEmeralds != inputEmeraldCount) {
@@ -422,7 +422,7 @@ public class RequestStandBlockEntity extends BlockEntity implements ExtendedScre
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
         if (stack.getItem() == Items.EMERALD_BLOCK && slot == INPUT_SLOT_BLOCKS) return true;
         if (stack.getItem() == Items.EMERALD && slot == INPUT_SLOT_EMERALDS) return true;
-        if (stack.getItem() == VillagerBusinessItemInit.EMERALD_NUGGET && slot == INPUT_SLOT_NUGGETS) return true;
+        if (stack.getItem() == VillagerBusinessItems.EMERALD_NUGGET && slot == INPUT_SLOT_NUGGETS) return true;
         return false;
     }
 

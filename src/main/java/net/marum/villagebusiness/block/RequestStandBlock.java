@@ -63,8 +63,8 @@ public class RequestStandBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof RequestStandBlockEntity) {
-                Containers.dropContents(world, pos, (RequestStandBlockEntity)blockEntity);
-                world.updateNeighbourForOutputSignal(pos,this);
+                Containers.dropContents(world, pos, (RequestStandBlockEntity) blockEntity);
+                world.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, world, pos, newState, moved);
         }

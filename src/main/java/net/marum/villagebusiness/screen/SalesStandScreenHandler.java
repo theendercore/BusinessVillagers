@@ -1,7 +1,8 @@
 package net.marum.villagebusiness.screen;
 
 import net.marum.villagebusiness.block.entity.SalesStandBlockEntity;
-import net.marum.villagebusiness.init.VillagerBusinessItemInit;
+import net.marum.villagebusiness.init.VillageBusinessScreenHandlers;
+import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.util.NonEmeraldSlot;
 import net.marum.villagebusiness.util.OutputOnlySlot;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class SalesStandScreenHandler extends AbstractContainerMenu{
+public class SalesStandScreenHandler extends AbstractContainerMenu {
     private final Container inventory;
     public final SalesStandBlockEntity blockEntity;
 
@@ -24,12 +25,12 @@ public class SalesStandScreenHandler extends AbstractContainerMenu{
 
     public SalesStandScreenHandler(int syncId, Inventory playerInventory, BlockEntity blockEntity) {
         super(VillageBusinessScreenHandlers.SALES_STAND_SCREEN_HANDLER, syncId);
-        this.inventory = (Container)blockEntity;
+        this.inventory = (Container) blockEntity;
         inventory.startOpen(playerInventory.player);
-        this.blockEntity = (SalesStandBlockEntity)blockEntity;
+        this.blockEntity = (SalesStandBlockEntity) blockEntity;
 
         this.addSlot(new NonEmeraldSlot(inventory, 3, 15, 21));
-        this.addSlot(new OutputOnlySlot(inventory, 2, 109, 21, VillagerBusinessItemInit.EMERALD_NUGGET));
+        this.addSlot(new OutputOnlySlot(inventory, 2, 109, 21, VillagerBusinessItems.EMERALD_NUGGET));
         this.addSlot(new OutputOnlySlot(inventory, 1, 127, 21, Items.EMERALD));
         this.addSlot(new OutputOnlySlot(inventory, 0, 145, 21, Items.EMERALD_BLOCK));
 

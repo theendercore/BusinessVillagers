@@ -1,7 +1,8 @@
 package net.marum.villagebusiness.screen;
 
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
-import net.marum.villagebusiness.init.VillagerBusinessItemInit;
+import net.marum.villagebusiness.init.VillageBusinessScreenHandlers;
+import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.util.NonEmeraldSlot;
 import net.marum.villagebusiness.util.OutputOnlySlot;
 import net.minecraft.network.FriendlyByteBuf;
@@ -29,7 +30,7 @@ public class RequestStandScreenHandler extends AbstractContainerMenu{
         this.blockEntity = (RequestStandBlockEntity)blockEntity;
 
         this.addSlot(new NonEmeraldSlot(inventory, 0, 145, 21));
-        this.addSlot(new OutputOnlySlot(inventory, 3, 15, 21, VillagerBusinessItemInit.EMERALD_NUGGET));
+        this.addSlot(new OutputOnlySlot(inventory, 3, 15, 21, VillagerBusinessItems.EMERALD_NUGGET));
         this.addSlot(new OutputOnlySlot(inventory, 2, 33, 21, Items.EMERALD));
         this.addSlot(new OutputOnlySlot(inventory, 1, 51, 21, Items.EMERALD_BLOCK));
 
@@ -54,7 +55,7 @@ public class RequestStandScreenHandler extends AbstractContainerMenu{
             newStack = originalStack.copy();
 
             if (invSlot >= this.inventory.getContainerSize()) {
-                if (newStack.getItem() != Items.EMERALD && newStack.getItem() != Items.EMERALD_BLOCK && newStack.getItem() != VillagerBusinessItemInit.EMERALD_NUGGET) {
+                if (newStack.getItem() != Items.EMERALD && newStack.getItem() != Items.EMERALD_BLOCK && newStack.getItem() != VillagerBusinessItems.EMERALD_NUGGET) {
                     blockEntity.sendRequestToServer(newStack.copy());
                     return ItemStack.EMPTY;
                 }

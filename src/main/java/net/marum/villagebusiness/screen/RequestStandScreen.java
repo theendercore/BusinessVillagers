@@ -3,7 +3,7 @@ package net.marum.villagebusiness.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.marum.villagebusiness.VillageBusiness;
-import net.marum.villagebusiness.init.VillagerBusinessItemInit;
+import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.pricing.ItemPrice;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -32,7 +32,7 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
         int y = (height-imageHeight)/2;
 
         context.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
-        
+
         // Render ghost slot item
         ItemStack filterItem = menu.getFilterItem();
         if (!filterItem.isEmpty()) {
@@ -42,14 +42,14 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
 
     @Override
     public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        this.renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
 
         int x = (width-imageWidth)/2;
         int y = (height-imageHeight)/2;
 
         context.drawString(font, Component.translatable("village_business.request"), x+93, y+56, 0x444444, false);
-        
+
         if (menu.blockEntity.hasFilter()) {
             if (menu.blockEntity.getItemPrice() != null) {
                 ItemPrice itemPrice = menu.blockEntity.getItemPrice();
@@ -76,6 +76,8 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
         tooltip("village_business.seller_return_tip", 15, 54, 50, 12, context, mouseX, mouseY, font);
 
         tooltip("village_business.request_slot", 145, 51, 18, 18, context, mouseX, mouseY, font);
+
+        this.renderTooltip(context, mouseX, mouseY);
     }
 
     @Override
@@ -83,9 +85,9 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
         // Check if ghost slot is clicked
         if (isMouseOverGhostSlot(mouseX, mouseY)) { // Adjust position/size
             ItemStack cursorStack = this.minecraft.player.containerMenu.getCarried();
-            if (cursorStack.getItem() == Items.EMERALD || cursorStack.getItem() == Items.EMERALD_BLOCK || cursorStack.getItem() == VillagerBusinessItemInit.EMERALD_NUGGET)
+            if (cursorStack.getItem() == Items.EMERALD || cursorStack.getItem() == Items.EMERALD_BLOCK || cursorStack.getItem() == VillagerBusinessItems.EMERALD_NUGGET)
                 return false;
-                
+
             if (!cursorStack.isEmpty()) {
                 menu.blockEntity.sendRequestToServer(cursorStack.copy());
             } else {
