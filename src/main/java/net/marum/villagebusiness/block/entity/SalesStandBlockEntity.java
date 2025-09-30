@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.marum.villagebusiness.util.BVLoaderHelpers;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
 import net.marum.villagebusiness.init.VillagerBusinessItems;
@@ -98,7 +98,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeBlockPos(worldPosition);
         buf.writeInt(newValue);
-        ClientPlayNetworking.send(VillageBusinessNetworking.PRICE_SETTING_PACKET, buf);
+        BVLoaderHelpers.c2sPacket(VillageBusinessNetworking.PRICE_SETTING_PACKET, buf);
 
         priceSetting = newValue;
         updatePrices();

@@ -1,6 +1,8 @@
 package net.marum.villagebusiness.init;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.marum.villagebusiness.VillageBusiness;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -10,6 +12,7 @@ import java.util.function.Consumer;
 
 public class VillageBusinessEvents {
     public static void init() {
+        ServerLifecycleEvents.SERVER_STARTING.register(s -> VillageBusiness.SERVER = s);
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
                 .register(entries -> addToTab(CreativeModeTabs.FUNCTIONAL_BLOCKS, entries::accept));
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.INGREDIENTS)

@@ -32,7 +32,6 @@ public class VillageBusiness implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ServerLifecycleEvents.SERVER_STARTING.register(s -> SERVER = s);
 		VillagerBusinessItems.init();
 		VillagerBusinessBlocks.init();
 		VillageBusinessBlockEntityTypeInit.init();
