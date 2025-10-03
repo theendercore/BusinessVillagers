@@ -1,7 +1,6 @@
 package net.marum.villagebusiness.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.marum.villagebusiness.VillageBusiness;
 import net.marum.villagebusiness.pricing.ItemPrice;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,8 +11,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import static net.marum.villagebusiness.VillageBusiness.id;
+
 public class SalesStandScreen extends AbstractContainerScreen<SalesStandScreenHandler> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(VillageBusiness.MOD_ID, "textures/gui/sales_stand_gui.png");
+    private static final ResourceLocation TEXTURE = id("textures/gui/sales_stand_gui.png");
 
     public SalesStandScreen(SalesStandScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
@@ -95,7 +96,7 @@ public class SalesStandScreen extends AbstractContainerScreen<SalesStandScreenHa
 
     @Override
     public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
 
         int x = (width - imageWidth) / 2;
@@ -132,6 +133,7 @@ public class SalesStandScreen extends AbstractContainerScreen<SalesStandScreenHa
         this.renderTooltip(context, mouseX, mouseY);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void tooltip(String translationKey, int x, int y, int w, int h, GuiGraphics context, int mouseX, int mouseY, Font textRenderer) {
         if (isHovering(x, y, w, h, mouseX, mouseY))
             context.renderTooltip(textRenderer, Component.translatable(translationKey), mouseX, mouseY);

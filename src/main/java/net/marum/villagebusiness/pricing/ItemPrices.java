@@ -9,7 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.ItemLike;
 
@@ -435,7 +435,7 @@ public class ItemPrices {
             e.printStackTrace();
         }*/
 
-        Map<Item, ItemPrice> map = new HashMap<Item, ItemPrice>();
+        Map<Item, ItemPrice> map = new HashMap<>();
 
         for (String key : VillageBusiness.CONFIG.getKeySet()) {
             String value = VillageBusiness.CONFIG.getOrDefault(key, "");
@@ -446,7 +446,7 @@ public class ItemPrices {
                 int saleChance = Integer.parseInt(parts[2]);
                 int requestChance = Integer.parseInt(parts[3]);
                 int cooldown = Integer.parseInt(parts[4]);
-                addPrice(map, BuiltInRegistries.ITEM.get(new ResourceLocation(key)), price, amount, saleChance, requestChance, cooldown);
+                addPrice(map, BuiltInRegistries.ITEM.get(ResourceLocation.parse(key)), price, amount, saleChance, requestChance, cooldown);
             }
         }
 
@@ -493,18 +493,16 @@ public class ItemPrices {
         if (SERVER == null) return;
         RegistryAccess registryManager = SERVER.registryAccess();
 
-        List<String> itemsWithoutPrice = new ArrayList<String>();
+        List<String> itemsWithoutPrice = new ArrayList<>();
         for (ResourceLocation id : BuiltInRegistries.ITEM.keySet()) {
             itemsWithoutPrice.add(id.toString());
         }
 
-        Map<Item, ItemPrice> primeProducts = new HashMap<Item, ItemPrice>();
+        Map<Item, ItemPrice> primeProducts = new HashMap<>();
         for (Map.Entry<Item, ItemPrice> entry : map.entrySet()) {
             primeProducts.put(entry.getKey(), entry.getValue());
             String id = BuiltInRegistries.ITEM.getKey(entry.getKey()).toString();
-            if (itemsWithoutPrice.contains(id)) {
-                itemsWithoutPrice.remove(id);
-            }
+            itemsWithoutPrice.remove(id);
         }
 
         RecipeManager recipeManager = SERVER.getRecipeManager();
@@ -514,8 +512,8 @@ public class ItemPrices {
 
         while (stillNeedRecipes && safety < 5) {
             stillNeedRecipes = false;
-            for (Recipe<?> recipe : recipeManager.getRecipes()) {
-                ItemStack output = recipe.getResultItem(registryManager);
+            for (RecipeHolder<?> recipe : recipeManager.getRecipes()) {
+                ItemStack output = recipe.value().getResultItem(registryManager);
                 if (map.containsKey(output.getItem())) {
                     continue;
                 }
@@ -533,7 +531,7 @@ public class ItemPrices {
                 int minIngredientRequestChance = 100;
                 int maxIngredientCooldown = 0;
                 boolean allIngredientsHavePrices = true;
-                for (Ingredient ingredient : recipe.getIngredients()) {
+                for (Ingredient ingredient : recipe.value().getIngredients()) {
                     boolean ingredientHasPrice = false;
                     float cheapestIngredient = 99999999;
                     if (!ingredient.isEmpty()) {
@@ -577,9 +575,7 @@ public class ItemPrices {
                         if (!map.containsKey(outputItem) || (Math.round(totalIngredientCost) < map.get(outputItem).getPrice(1) / map.get(outputItem).getSellAmount(1))) {
                             map.put(outputItem, new ItemPrice(outputItem, Math.round(totalIngredientCost), sellAmount, minIngredientSaleChance, minIngredientRequestChance, maxIngredientCooldown));
                             String id = BuiltInRegistries.ITEM.getKey(outputItem).toString();
-                            if (itemsWithoutPrice.contains(id)) {
-                                itemsWithoutPrice.remove(id);
-                            }
+                            itemsWithoutPrice.remove(id);
                         }
                     }
                 }

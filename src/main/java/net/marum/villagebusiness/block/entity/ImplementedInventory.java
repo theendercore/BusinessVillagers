@@ -1,6 +1,7 @@
 package net.marum.villagebusiness.block.entity;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
@@ -8,6 +9,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.List;
  * A simple {@code SidedInventory} implementation with only default methods + an item list getter.
  *
  * <h2>Reading and writing to tags</h2>
- * Use {@link ContainerHelper#saveAllItems(CompoundTag, NonNullList)} and {@link ContainerHelper#loadAllItems(CompoundTag, NonNullList)}
+ * Use {@link ContainerHelper#saveAllItems(CompoundTag, NonNullList, HolderLookup.Provider)} and {@link ContainerHelper#loadAllItems(CompoundTag, NonNullList, HolderLookup.Provider)}
  * on {@linkplain #getItems() the item list}.
  * <p>
  * License: <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
@@ -64,7 +66,7 @@ public interface ImplementedInventory extends WorldlyContainer {
      * @return the available slots
      */
     @Override
-    default int[] getSlotsForFace(Direction side) {
+    default int @NotNull [] getSlotsForFace(Direction side) {
         int[] result = new int[getItems().size()];
         for (int i = 0; i < result.length; i++) {
             result[i] = i;
@@ -139,7 +141,7 @@ public interface ImplementedInventory extends WorldlyContainer {
      * @return the item in the slot
      */
     @Override
-    default ItemStack getItem(int slot) {
+    default @NotNull ItemStack getItem(int slot) {
         return getItems().get(slot);
     }
 
@@ -154,7 +156,7 @@ public interface ImplementedInventory extends WorldlyContainer {
      * @return a stack
      */
     @Override
-    default ItemStack removeItem(int slot, int count) {
+    default @NotNull ItemStack removeItem(int slot, int count) {
         ItemStack result = ContainerHelper.removeItem(getItems(), slot, count);
         if (!result.isEmpty()) {
             setChanged();
@@ -172,7 +174,7 @@ public interface ImplementedInventory extends WorldlyContainer {
      * @return the removed stack
      */
     @Override
-    default ItemStack removeItemNoUpdate(int slot) {
+    default @NotNull ItemStack removeItemNoUpdate(int slot) {
         return ContainerHelper.takeItem(getItems(), slot);
     }
 

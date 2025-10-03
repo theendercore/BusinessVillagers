@@ -1,11 +1,10 @@
 package net.marum.villagebusiness.util;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public interface BVLoaderHelpers {
-    static void c2sPacket(ResourceLocation channelName, FriendlyByteBuf buf) {
-        ClientPlayNetworking.send(channelName, buf);
+    static void c2sPacket(CustomPacketPayload payload) {
+        ClientPlayNetworking.send(payload);
     }
 }

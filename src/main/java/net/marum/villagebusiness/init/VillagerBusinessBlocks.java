@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import static net.marum.villagebusiness.VillageBusiness.id;
 
 public class VillagerBusinessBlocks {
-    public static final BlockBehaviour.Properties STAND_PROPS = BlockBehaviour.Properties.copy(Blocks.BARREL).isValidSpawn(Blocks::never);
+    public static final BlockBehaviour.Properties STAND_PROPS = BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL).isValidSpawn(Blocks::never);
 
     public static final SalesStandBlock SALES_STAND_BLOCK = registerWithItem("sales_stand", new SalesStandBlock(STAND_PROPS));
     public static final RequestStandBlock REQUEST_STAND_BLOCK = registerWithItem("request_stand", new RequestStandBlock(STAND_PROPS));

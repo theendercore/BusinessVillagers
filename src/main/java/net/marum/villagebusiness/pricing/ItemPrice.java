@@ -57,7 +57,7 @@ public class ItemPrice {
 
     public int getSellAmount(int priceSetting) {
         if (priceSetting == 0) {
-            if (price < 72 && sellAmount <= item.getMaxStackSize() / 2) {
+            if (price < 72 && sellAmount <= item.getDefaultMaxStackSize() / 2) {
                 return sellAmount * 2;
             }
         }
@@ -66,44 +66,35 @@ public class ItemPrice {
 
 
     public int getPrice(int priceSetting) {
-        switch (priceSetting) {
-            case 0:
-                if (price < 72 && sellAmount <= item.getMaxStackSize() / 2) {
-                    return price;
+        return switch (priceSetting) {
+            case 0 -> {
+                if (price < 72 && sellAmount <= item.getDefaultMaxStackSize() / 2) {
+                    yield price;
                 }
-                return price / 2;
-            case 1:
-                return price;
-            case 2:
-                return price * 2;
-        }
-        return price;
+                yield price / 2;
+            }
+            case 1 -> price;
+            case 2 -> price * 2;
+            default -> price;
+        };
     }
 
 
     public int getCooldown(int priceSetting) {
-        switch (priceSetting) {
-            case 0:
-                return (int) Math.ceil(cooldown / 2);
-            case 1:
-                return cooldown;
-            case 2:
-                return cooldown * 4;
-        }
-        return cooldown;
+        return switch (priceSetting) {
+            case 0 -> (int) Math.ceil(cooldown / 2);
+            case 2 -> cooldown * 4;
+            default -> cooldown;
+        };
     }
 
 
     public int getSaleChance(int priceSetting) {
-        switch (priceSetting) {
-            case 0:
-                return Math.round((100 + saleChance * 2) / 3);
-            case 1:
-                return saleChance;
-            case 2:
-                return saleChance / 4;
-        }
-        return saleChance;
+        return switch (priceSetting) {
+            case 0 -> Math.round((100 + saleChance * 2) / 3);
+            case 2 -> saleChance / 4;
+            default -> saleChance;
+        };
     }
 
     public int getRequestChance() {

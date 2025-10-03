@@ -30,7 +30,7 @@ public class VillageBusiness implements ModInitializer {
         VillageBusinessBlockEntityTypeInit.init();
         VillageBusinessScreenHandlers.init();
         VillageBusinessEvents.init();
-        VillageBusinessNetworking.registerServerHandlers();
+        VillageBusinessNetworking.init();
     }
 
     public static ResourceLocation id(String path) {

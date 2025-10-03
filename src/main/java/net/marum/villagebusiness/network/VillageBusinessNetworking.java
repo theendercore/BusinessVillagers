@@ -1,40 +1,27 @@
 package net.marum.villagebusiness.network;
 
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.marum.villagebusiness.VillageBusiness;
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
 import net.marum.villagebusiness.block.entity.SalesStandBlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
 public class VillageBusinessNetworking {
-    public static final ResourceLocation PRICE_SETTING_PACKET = VillageBusiness.id("price_setting");
-    public static final ResourceLocation REQUEST_PACKET = VillageBusiness.id("request");
+    @SuppressWarnings("resource")
+    public static void init() {
+        PayloadTypeRegistry.playC2S().register(PriceSetPayload.ID, PriceSetPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(RequestFilterPayload.ID, RequestFilterPayload.CODEC);
 
-    public static void registerServerHandlers() {
-        ServerPlayNetworking.registerGlobalReceiver(PRICE_SETTING_PACKET, (server, player, _h, buf, _rs) -> {
-            BlockPos pos = buf.readBlockPos();
-            int value = buf.readInt();
-
-            server.execute(() -> {
-                if (player.level().getBlockEntity(pos) instanceof SalesStandBlockEntity blockEntity) {
-                    blockEntity.serverSetPriceSetting(value);
-                    blockEntity.updateListeners();
-                }
-            });
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(REQUEST_PACKET, (server, player, _h, buf, _rs) -> {
-            BlockPos pos = buf.readBlockPos();
-            ItemStack value = buf.readItem();
-
-            server.execute(() -> {
-                if (player.level().getBlockEntity(pos) instanceof RequestStandBlockEntity blockEntity) {
-                    blockEntity.setFilterItem(value);
-                    blockEntity.updateListeners();
-                }
-            });
-        });
+        ServerPlayNetworking.registerGlobalReceiver(PriceSetPayload.ID, (payload, ctx) -> ctx.server().execute(() -> {
+            if (ctx.player().level().getBlockEntity(payload.pos()) instanceof SalesStandBlockEntity blockEntity) {
+                blockEntity.serverSetPriceSetting(payload.newPrice());
+                blockEntity.updateListeners();
+            }
+        }));
+        ServerPlayNetworking.registerGlobalReceiver(RequestFilterPayload.ID, (payload, ctx) -> ctx.server().execute(() -> {
+            if (ctx.player().level().getBlockEntity(payload.pos()) instanceof RequestStandBlockEntity blockEntity) {
+                blockEntity.setFilterItem(payload.filter());
+                blockEntity.updateListeners();
+            }
+        }));
     }
 }

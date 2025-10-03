@@ -1,12 +1,11 @@
 package net.marum.villagebusiness.block;
 
+import com.mojang.serialization.MapCodec;
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -19,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RequestStandBlock extends BaseEntityBlock {
@@ -28,8 +28,16 @@ public class RequestStandBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.POWERED, false));
     }
 
+    public static final MapCodec<RequestStandBlock> CODEC = simpleCodec(RequestStandBlock::new);
+
     @Override
-    public RenderShape getRenderShape(BlockState state) {
+    protected @NotNull MapCodec<? extends RequestStandBlock> codec() {
+        return CODEC;
+    }
+
+
+    @Override
+    public @NotNull RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -39,16 +47,13 @@ public class RequestStandBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide()) {
-            if (world.getBlockEntity(pos) instanceof RequestStandBlockEntity blockEntity) {
-                MenuProvider screenHandlerFactory = blockEntity;
-                if (screenHandlerFactory != null) {
-                    player.openMenu(screenHandlerFactory);
-                }
-            }
+    protected @NotNull InteractionResult useWithoutItem(BlockState blockState, Level world, BlockPos pos, Player player, BlockHitResult blockHitResult) {
+        if (world.isClientSide) return InteractionResult.SUCCESS;
+        if (world.getBlockEntity(pos) instanceof RequestStandBlockEntity blockEntity) {
+            player.openMenu(blockEntity);
+            return InteractionResult.CONSUME;
         }
-        return InteractionResult.SUCCESS;
+        return super.useWithoutItem(blockState, world, pos, player, blockHitResult);
     }
 
     @Nullable

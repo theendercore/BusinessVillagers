@@ -3,9 +3,9 @@ package net.marum.villagebusiness.screen;
 import net.marum.villagebusiness.block.entity.SalesStandBlockEntity;
 import net.marum.villagebusiness.init.VillageBusinessScreenHandlers;
 import net.marum.villagebusiness.init.VillagerBusinessItems;
+import net.marum.villagebusiness.network.PosOpeningData;
 import net.marum.villagebusiness.util.NonEmeraldSlot;
 import net.marum.villagebusiness.util.OutputOnlySlot;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -19,8 +19,9 @@ public class SalesStandScreenHandler extends AbstractContainerMenu {
     private final Container inventory;
     public final SalesStandBlockEntity blockEntity;
 
-    public SalesStandScreenHandler(int syncId, Inventory inventory, FriendlyByteBuf buf) {
-        this(syncId, inventory, inventory.player.level().getBlockEntity(buf.readBlockPos()));
+    public SalesStandScreenHandler(int syncId, Inventory inventory, PosOpeningData data) {
+        //noinspection resource
+        this(syncId, inventory, inventory.player.level().getBlockEntity(data.pos()));
     }
 
     public SalesStandScreenHandler(int syncId, Inventory playerInventory, BlockEntity blockEntity) {
@@ -42,7 +43,7 @@ public class SalesStandScreenHandler extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int invSlot) {
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(invSlot);
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack originalStack = slot.getItem();
             newStack = originalStack.copy();
             if (invSlot < this.inventory.getContainerSize()) {

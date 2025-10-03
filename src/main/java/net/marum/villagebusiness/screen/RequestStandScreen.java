@@ -1,7 +1,6 @@
 package net.marum.villagebusiness.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.marum.villagebusiness.VillageBusiness;
 import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.pricing.ItemPrice;
 import net.minecraft.client.gui.Font;
@@ -14,8 +13,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import static net.marum.villagebusiness.VillageBusiness.id;
+
 public class RequestStandScreen extends AbstractContainerScreen<RequestStandScreenHandler> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(VillageBusiness.MOD_ID, "textures/gui/request_stand_gui.png");
+    private static final ResourceLocation TEXTURE = id("textures/gui/request_stand_gui.png");
     boolean isREILoaded = false;
 
     public RequestStandScreen(RequestStandScreenHandler handler, Inventory inventory, Component title) {
@@ -41,7 +42,7 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
 
     @Override
     public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
 
         int x = (width - imageWidth) / 2;
@@ -83,7 +84,7 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         // Check if ghost slot is clicked
         if (isMouseOverGhostSlot(mouseX, mouseY)) { // Adjust position/size
-            ItemStack cursorStack = this.minecraft.player.containerMenu.getCarried();
+            ItemStack cursorStack = minecraft.player.containerMenu.getCarried();
             if (cursorStack.getItem() == Items.EMERALD || cursorStack.getItem() == Items.EMERALD_BLOCK || cursorStack.getItem() == VillagerBusinessItems.EMERALD_NUGGET)
                 return false;
 
