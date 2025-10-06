@@ -9,6 +9,14 @@ public record PosOpeningData(BlockPos pos) {
         return new PosOpeningData(pos);
     }
 
+    public <T extends FriendlyByteBuf> void send(T buf) {
+        CODEC.encode(buf, this);
+    }
+
     public static StreamCodec<FriendlyByteBuf, PosOpeningData> CODEC =
             StreamCodec.composite(BlockPos.STREAM_CODEC, PosOpeningData::pos, PosOpeningData::new);
+
+    public static PosOpeningData get(FriendlyByteBuf buf) {
+        return CODEC.decode(buf);
+    }
 }

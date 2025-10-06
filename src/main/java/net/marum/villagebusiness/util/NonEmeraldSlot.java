@@ -15,6 +15,6 @@ public class NonEmeraldSlot extends Slot {
     @Override
     public boolean mayPlace(ItemStack stack) {
         Item item = stack.getItem();
-        return item != Items.EMERALD && item != Items.EMERALD_BLOCK && item != VillagerBusinessItems.EMERALD_NUGGET;
+        return item != Items.EMERALD && item != Items.EMERALD_BLOCK && item != VillagerBusinessItems.EMERALD_NUGGET.get();
     }
 }

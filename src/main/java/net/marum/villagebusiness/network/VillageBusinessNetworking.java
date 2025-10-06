@@ -1,27 +1,41 @@
 package net.marum.villagebusiness.network;
 
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
 import net.marum.villagebusiness.block.entity.SalesStandBlockEntity;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class VillageBusinessNetworking {
-    @SuppressWarnings("resource")
-    public static void init() {
-        PayloadTypeRegistry.playC2S().register(PriceSetPayload.ID, PriceSetPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(RequestFilterPayload.ID, RequestFilterPayload.CODEC);
+    public static void init(IEventBus bus) {
+        bus.addListener(VillageBusinessNetworking::register);
+    }
 
-        ServerPlayNetworking.registerGlobalReceiver(PriceSetPayload.ID, (payload, ctx) -> ctx.server().execute(() -> {
+    public static void register(RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar("1");
+        registrar.playToServer(PriceSetPayload.ID, PriceSetPayload.CODEC, VillageBusinessNetworking::priceSetPayloadHandler);
+        registrar.playToServer(RequestFilterPayload.ID, RequestFilterPayload.CODEC, VillageBusinessNetworking::requestFilterPayloadHandler);
+    }
+
+    @SuppressWarnings("resource")
+    public static void priceSetPayloadHandler(PriceSetPayload payload, IPayloadContext ctx) {
+        ctx.player().getServer().execute(() -> {
             if (ctx.player().level().getBlockEntity(payload.pos()) instanceof SalesStandBlockEntity blockEntity) {
                 blockEntity.serverSetPriceSetting(payload.newPrice());
                 blockEntity.updateListeners();
             }
-        }));
-        ServerPlayNetworking.registerGlobalReceiver(RequestFilterPayload.ID, (payload, ctx) -> ctx.server().execute(() -> {
+        });
+
+    }
+
+    @SuppressWarnings("resource")
+    public static void requestFilterPayloadHandler(RequestFilterPayload payload, IPayloadContext ctx) {
+        ctx.player().getServer().execute(() -> {
             if (ctx.player().level().getBlockEntity(payload.pos()) instanceof RequestStandBlockEntity blockEntity) {
                 blockEntity.setFilterItem(payload.filter());
                 blockEntity.updateListeners();
             }
-        }));
+        });
     }
 }

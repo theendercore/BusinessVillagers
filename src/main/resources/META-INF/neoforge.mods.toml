@@ -1,0 +1,31 @@
+modLoader="javafml" #mandatory
+loaderVersion="[1,)" #mandatory
+license="MIT"
+#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+
+[[mods]] #mandatory
+modId="village_business" #mandatory
+version="1.1.1" #mandatory
+displayName="Village Business" #mandatory
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+#logoFile="examplemod.png" #optional
+#credits="" #optional
+authors="Marum_, TheEnderCore" #optional
+description='''Open your own business and have villagers show up and buy what you offer!'''
+[[mixins]]
+config="village_business.mixins.json"
+
+[[dependencies.village_business]] #optional
+    modId="neoforge" #mandatory
+    type="required" #mandatory
+    versionRange="[21.1.209,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.village_business]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21,)"
+    ordering="NONE"
+    side="BOTH"

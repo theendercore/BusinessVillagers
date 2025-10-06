@@ -6,6 +6,8 @@ import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.network.PosOpeningData;
 import net.marum.villagebusiness.util.NonEmeraldSlot;
 import net.marum.villagebusiness.util.OutputOnlySlot;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,19 +22,23 @@ public class RequestStandScreenHandler extends AbstractContainerMenu {
     private final Container inventory;
     public final RequestStandBlockEntity blockEntity;
 
-    public RequestStandScreenHandler(int syncId, Inventory inventory, PosOpeningData data) {
+    public RequestStandScreenHandler(int syncId, Inventory inventory, FriendlyByteBuf buf) {
+        this(syncId, inventory, PosOpeningData.get(buf).pos());
+    }
+
+    public RequestStandScreenHandler(int syncId, Inventory inventory, BlockPos pos) {
         //noinspection resource
-        this(syncId, inventory, inventory.player.level().getBlockEntity(data.pos()));
+        this(syncId, inventory, inventory.player.level().getBlockEntity(pos));
     }
 
     public RequestStandScreenHandler(int syncId, Inventory playerInventory, BlockEntity blockEntity) {
-        super(VillageBusinessScreenHandlers.REQUEST_STAND_SCREEN_HANDLER, syncId);
+        super(VillageBusinessScreenHandlers.REQUEST_STAND_SCREEN_HANDLER.get(), syncId);
         this.inventory = (Container) blockEntity;
         inventory.startOpen(playerInventory.player);
         this.blockEntity = (RequestStandBlockEntity) blockEntity;
 
         this.addSlot(new NonEmeraldSlot(inventory, 0, 145, 21));
-        this.addSlot(new OutputOnlySlot(inventory, 3, 15, 21, VillagerBusinessItems.EMERALD_NUGGET));
+        this.addSlot(new OutputOnlySlot(inventory, 3, 15, 21, VillagerBusinessItems.EMERALD_NUGGET.get()));
         this.addSlot(new OutputOnlySlot(inventory, 2, 33, 21, Items.EMERALD));
         this.addSlot(new OutputOnlySlot(inventory, 1, 51, 21, Items.EMERALD_BLOCK));
 
@@ -49,7 +55,7 @@ public class RequestStandScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(Player player, int invSlot) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int invSlot) {
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(invSlot);
         if (slot.hasItem()) {
@@ -57,7 +63,7 @@ public class RequestStandScreenHandler extends AbstractContainerMenu {
             newStack = originalStack.copy();
 
             if (invSlot >= this.inventory.getContainerSize()) {
-                if (newStack.getItem() != Items.EMERALD && newStack.getItem() != Items.EMERALD_BLOCK && newStack.getItem() != VillagerBusinessItems.EMERALD_NUGGET) {
+                if (newStack.getItem() != Items.EMERALD && newStack.getItem() != Items.EMERALD_BLOCK && newStack.getItem() != VillagerBusinessItems.EMERALD_NUGGET.get()) {
                     blockEntity.sendRequestToServer(newStack.copy());
                     return ItemStack.EMPTY;
                 }
@@ -81,7 +87,7 @@ public class RequestStandScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return this.inventory.stillValid(player);
     }
 
@@ -99,7 +105,7 @@ public class RequestStandScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
+    public boolean canTakeItemForPickAll(@NotNull ItemStack stack, Slot slot) {
         return slot.getContainerSlot() == 0;
     }
 

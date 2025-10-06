@@ -3,16 +3,19 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "village_business:emerald_nugget"
+      "item": "minecraft:barrel"
+    },
+    "X": {
+      "item": "minecraft:emerald"
     }
   },
   "pattern": [
-    "###",
-    "###",
-    "###"
+    "X",
+    "#"
   ],
   "result": {
-    "item": "minecraft:emerald"
+    "count": 1,
+    "id": "village_business:sales_stand"
   },
   "show_notification": true
 }

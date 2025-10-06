@@ -1,9 +1,7 @@
 package net.marum.villagebusiness.block.entity;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
 import net.marum.villagebusiness.init.VillagerBusinessItems;
-import net.marum.villagebusiness.network.PosOpeningData;
 import net.marum.villagebusiness.network.PriceSetPayload;
 import net.marum.villagebusiness.pricing.ItemPrice;
 import net.marum.villagebusiness.pricing.ItemPrices;
@@ -20,10 +18,10 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -49,7 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<PosOpeningData>, ImplementedInventory {
+public class SalesStandBlockEntity extends BlockEntity implements  MenuProvider, ImplementedInventory {
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(4, ItemStack.EMPTY);
     private static final int INPUT_SLOT = 3;
     private static final int OUTPUT_SLOT_NUGGETS = 2;
@@ -83,7 +81,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
     private int lastUpdatedBlockCount = 0;
 
     public SalesStandBlockEntity(BlockPos pos, BlockState state) {
-        super(VillageBusinessBlockEntityTypeInit.SALES_STAND_ENTITY, pos, state);
+        super(VillageBusinessBlockEntityTypeInit.SALES_STAND_ENTITY.get(), pos, state);
     }
 
     public ItemPrice getItemPrice() {
@@ -96,6 +94,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
 
     public void sendPriceSettingToServer(int newValue) {
         BVLoaderHelpers.c2sPacket(new PriceSetPayload(worldPosition, newValue));
+
         priceSetting = newValue;
         updatePrices();
     }
@@ -140,7 +139,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
                     }
                 }
             });
-            entity.markedForRemovalVillagers.forEach(lure -> entity.luringVillagers.remove(lure));
+            entity.markedForRemovalVillagers.forEach(entity.luringVillagers::remove);
             entity.markedForRemovalVillagers.clear();
 
             boolean inventoryChanged = false;
@@ -276,7 +275,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
 
         if (resultingNuggets != outputNuggetCount) {
             outputNuggetCount = resultingNuggets;
-            this.setItem(OUTPUT_SLOT_NUGGETS, new ItemStack(VillagerBusinessItems.EMERALD_NUGGET, resultingNuggets));
+            this.setItem(OUTPUT_SLOT_NUGGETS, new ItemStack(VillagerBusinessItems.EMERALD_NUGGET.get(), resultingNuggets));
         }
 
         if (resultingEmeralds != outputEmeraldCount) {
@@ -421,7 +420,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        if (stack.getItem() == Items.EMERALD || stack.getItem() == Items.EMERALD_BLOCK || stack.getItem() == VillagerBusinessItems.EMERALD_NUGGET)
+        if (stack.getItem() == Items.EMERALD || stack.getItem() == Items.EMERALD_BLOCK || stack.getItem() == VillagerBusinessItems.EMERALD_NUGGET.get())
             return false;
         return slot == INPUT_SLOT;
     }
@@ -439,8 +438,8 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
-        return new SalesStandScreenHandler(syncId, playerInventory, this);
+    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
+        return new SalesStandScreenHandler(i, inventory, worldPosition);
     }
 
     @Override
@@ -453,12 +452,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
     }
 
     @Override
-    public PosOpeningData getScreenOpeningData(ServerPlayer player) {
-        return PosOpeningData.of(worldPosition);
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
+    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider provider) {
         super.loadAdditional(nbt, provider);
         ContainerHelper.loadAllItems(nbt, inventory, provider);
         if (nbt.contains("InputCount", Tag.TAG_INT)) {
@@ -501,7 +495,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
+    protected void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider provider) {
         super.saveAdditional(nbt, provider);
         ContainerHelper.saveAllItems(nbt, inventory, provider);
         nbt.putInt("PriceSetting", this.priceSetting);
@@ -528,7 +522,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider provider) {
         CompoundTag nbt = super.getUpdateTag(provider);
         this.saveAdditional(nbt, provider);
         updatePrices();

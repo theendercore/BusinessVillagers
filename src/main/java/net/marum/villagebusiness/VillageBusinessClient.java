@@ -1,25 +1,37 @@
 package net.marum.villagebusiness;
 
-import net.fabricmc.api.ClientModInitializer;
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntityRenderer;
 import net.marum.villagebusiness.block.entity.SalesStandBlockEntityRenderer;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
 import net.marum.villagebusiness.init.VillageBusinessScreenHandlers;
 import net.marum.villagebusiness.screen.RequestStandScreen;
 import net.marum.villagebusiness.screen.SalesStandScreen;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-public class VillageBusinessClient implements ClientModInitializer {
+import static net.marum.villagebusiness.VillageBusiness.MOD_ID;
 
-    @Override
-    public void onInitializeClient() {
-        // Screens
-        MenuScreens.register(VillageBusinessScreenHandlers.SALES_STAND_SCREEN_HANDLER, SalesStandScreen::new);
-        MenuScreens.register(VillageBusinessScreenHandlers.REQUEST_STAND_SCREEN_HANDLER, RequestStandScreen::new);
 
-        // BE renderers
-        BlockEntityRenderers.register(VillageBusinessBlockEntityTypeInit.SALES_STAND_ENTITY, SalesStandBlockEntityRenderer::new);
-        BlockEntityRenderers.register(VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY, RequestStandBlockEntityRenderer::new);
+@Mod(value = MOD_ID, dist = Dist.CLIENT)
+public class VillageBusinessClient {
+    public VillageBusinessClient(ModContainer mod) {
+        var bus = mod.getEventBus();
+        if (bus != null) {
+            bus.addListener(VillageBusinessClient::menuScreens);
+            bus.addListener(VillageBusinessClient::renderer);
+        }
+    }
+
+    public static void menuScreens(RegisterMenuScreensEvent event) {
+        event.register(VillageBusinessScreenHandlers.SALES_STAND_SCREEN_HANDLER.get(), SalesStandScreen::new);
+        event.register(VillageBusinessScreenHandlers.REQUEST_STAND_SCREEN_HANDLER.get(), RequestStandScreen::new);
+    }
+
+    public static void renderer(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(VillageBusinessBlockEntityTypeInit.SALES_STAND_ENTITY.get(), SalesStandBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY.get(), RequestStandBlockEntityRenderer::new);
     }
 }

@@ -3,6 +3,7 @@ package net.marum.villagebusiness.block;
 import com.mojang.serialization.MapCodec;
 import net.marum.villagebusiness.block.entity.RequestStandBlockEntity;
 import net.marum.villagebusiness.init.VillageBusinessBlockEntityTypeInit;
+import net.marum.villagebusiness.network.PosOpeningData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -37,7 +38,7 @@ public class RequestStandBlock extends BaseEntityBlock {
 
 
     @Override
-    public @NotNull RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -47,10 +48,10 @@ public class RequestStandBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected @NotNull InteractionResult useWithoutItem(BlockState blockState, Level world, BlockPos pos, Player player, BlockHitResult blockHitResult) {
+    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState blockState, Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult blockHitResult) {
         if (world.isClientSide) return InteractionResult.SUCCESS;
         if (world.getBlockEntity(pos) instanceof RequestStandBlockEntity blockEntity) {
-            player.openMenu(blockEntity);
+            player.openMenu(blockEntity, buf -> PosOpeningData.of(pos).send(buf));
             return InteractionResult.CONSUME;
         }
         return super.useWithoutItem(blockState, world, pos, player, blockHitResult);
@@ -58,12 +59,12 @@ public class RequestStandBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY.create(pos, state);
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY.get().create(pos, state);
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(BlockState state, @NotNull Level world, @NotNull BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof RequestStandBlockEntity) {
@@ -75,7 +76,7 @@ public class RequestStandBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+    public void neighborChanged(BlockState state, Level world, @NotNull BlockPos pos, @NotNull Block block, @NotNull BlockPos fromPos, boolean notify) {
         boolean isPowered = world.hasNeighborSignal(pos);
         if (state.getValue(BlockStateProperties.POWERED) != isPowered) {
             world.setBlock(pos, state.setValue(BlockStateProperties.POWERED, isPowered), 3);
@@ -84,7 +85,7 @@ public class RequestStandBlock extends BaseEntityBlock {
 
     @Override
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return world.isClientSide() ? null : createTickerHelper(type, VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY, RequestStandBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, @NotNull BlockState state, @NotNull BlockEntityType<T> type) {
+        return world.isClientSide() ? null : createTickerHelper(type, VillageBusinessBlockEntityTypeInit.REQUEST_STAND_ENTITY.get(), RequestStandBlockEntity::tick);
     }
 }

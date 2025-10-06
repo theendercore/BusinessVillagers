@@ -1,28 +1,32 @@
 package net.marum.villagebusiness.init;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.marum.villagebusiness.network.PosOpeningData;
 import net.marum.villagebusiness.screen.RequestStandScreenHandler;
 import net.marum.villagebusiness.screen.SalesStandScreenHandler;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.network.IContainerFactory;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-import static net.marum.villagebusiness.VillageBusiness.id;
+import static net.marum.villagebusiness.VillageBusiness.MOD_ID;
 
 public class VillageBusinessScreenHandlers {
-    public static final ExtendedScreenHandlerType<SalesStandScreenHandler, PosOpeningData> SALES_STAND_SCREEN_HANDLER =
-            register("sales_stand", SalesStandScreenHandler::new, PosOpeningData.CODEC);
-    public static final ExtendedScreenHandlerType<RequestStandScreenHandler, PosOpeningData> REQUEST_STAND_SCREEN_HANDLER =
-            register("request_stand", RequestStandScreenHandler::new, PosOpeningData.CODEC);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
+
+    public static final DeferredHolder<MenuType<?>, MenuType<SalesStandScreenHandler>> SALES_STAND_SCREEN_HANDLER =
+            register("sales_stand", SalesStandScreenHandler::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<RequestStandScreenHandler>> REQUEST_STAND_SCREEN_HANDLER =
+            register("request_stand", RequestStandScreenHandler::new);
 
 
-    public static <T extends AbstractContainerMenu, D> ExtendedScreenHandlerType<T, D> register(String name, ExtendedScreenHandlerType.ExtendedFactory<T, D> menu, StreamCodec<? super RegistryFriendlyByteBuf, D> codec) {
-        return Registry.register(BuiltInRegistries.MENU, id(name), new ExtendedScreenHandlerType<>(menu, codec));
+    public static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> register(String name, IContainerFactory<T> menu) {
+        return MENU_TYPES.register(name, () -> IMenuTypeExtension.create(menu));
     }
 
-    public static void init() {
+    public static void init(IEventBus bus) {
+        MENU_TYPES.register(bus);
     }
 }

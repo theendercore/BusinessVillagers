@@ -1,5 +1,6 @@
 package net.marum.villagebusiness.config;
 
+import me.fzzyhmstrs.fzzy_config.api.SaveType;
 import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.util.Walkable;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedMap;
@@ -7,13 +8,20 @@ import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedAny;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
-import static net.marum.villagebusiness.VillageBusiness.*;
+import static net.marum.villagebusiness.VillageBusiness.MOD_ID;
+import static net.marum.villagebusiness.VillageBusiness.id;
 import static net.marum.villagebusiness.pricing.ItemPrices.isValid;
 
 public class VillageBusinessConfig extends Config {
     public VillageBusinessConfig() {
         super(id(MOD_ID));
+    }
+
+    @Override
+    public @NotNull SaveType saveType() {
+        return SaveType.SEPARATE;
     }
 
     public ValidatedDouble requestTimeMultiplier = new ValidatedDouble(2.0);

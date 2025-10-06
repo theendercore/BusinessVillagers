@@ -6,6 +6,8 @@ import net.marum.villagebusiness.init.VillagerBusinessItems;
 import net.marum.villagebusiness.network.PosOpeningData;
 import net.marum.villagebusiness.util.NonEmeraldSlot;
 import net.marum.villagebusiness.util.OutputOnlySlot;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -14,24 +16,30 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class SalesStandScreenHandler extends AbstractContainerMenu {
     private final Container inventory;
     public final SalesStandBlockEntity blockEntity;
 
-    public SalesStandScreenHandler(int syncId, Inventory inventory, PosOpeningData data) {
+
+    public SalesStandScreenHandler(int syncId, Inventory inventory, FriendlyByteBuf buf) {
+        this(syncId, inventory, PosOpeningData.get(buf).pos());
+    }
+
+    public SalesStandScreenHandler(int syncId, Inventory inventory, BlockPos pos) {
         //noinspection resource
-        this(syncId, inventory, inventory.player.level().getBlockEntity(data.pos()));
+        this(syncId, inventory, inventory.player.level().getBlockEntity(pos));
     }
 
     public SalesStandScreenHandler(int syncId, Inventory playerInventory, BlockEntity blockEntity) {
-        super(VillageBusinessScreenHandlers.SALES_STAND_SCREEN_HANDLER, syncId);
+        super(VillageBusinessScreenHandlers.SALES_STAND_SCREEN_HANDLER.get(), syncId);
         this.inventory = (Container) blockEntity;
         inventory.startOpen(playerInventory.player);
         this.blockEntity = (SalesStandBlockEntity) blockEntity;
 
         this.addSlot(new NonEmeraldSlot(inventory, 3, 15, 21));
-        this.addSlot(new OutputOnlySlot(inventory, 2, 109, 21, VillagerBusinessItems.EMERALD_NUGGET));
+        this.addSlot(new OutputOnlySlot(inventory, 2, 109, 21, VillagerBusinessItems.EMERALD_NUGGET.get()));
         this.addSlot(new OutputOnlySlot(inventory, 1, 127, 21, Items.EMERALD));
         this.addSlot(new OutputOnlySlot(inventory, 0, 145, 21, Items.EMERALD_BLOCK));
 
@@ -40,7 +48,7 @@ public class SalesStandScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int invSlot) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int invSlot) {
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(invSlot);
         if (slot.hasItem()) {
@@ -65,7 +73,7 @@ public class SalesStandScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return this.inventory.stillValid(player);
     }
 
@@ -83,7 +91,7 @@ public class SalesStandScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
+    public boolean canTakeItemForPickAll(@NotNull ItemStack stack, Slot slot) {
         return slot.getContainerSlot() == 0;
     }
 

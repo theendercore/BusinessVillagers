@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 
 import static net.marum.villagebusiness.VillageBusiness.id;
 
@@ -41,7 +42,7 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull GuiGraphics context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
 
@@ -85,7 +86,7 @@ public class RequestStandScreen extends AbstractContainerScreen<RequestStandScre
         // Check if ghost slot is clicked
         if (isMouseOverGhostSlot(mouseX, mouseY)) { // Adjust position/size
             ItemStack cursorStack = minecraft.player.containerMenu.getCarried();
-            if (cursorStack.getItem() == Items.EMERALD || cursorStack.getItem() == Items.EMERALD_BLOCK || cursorStack.getItem() == VillagerBusinessItems.EMERALD_NUGGET)
+            if (cursorStack.getItem() == Items.EMERALD || cursorStack.getItem() == Items.EMERALD_BLOCK || cursorStack.getItem() == VillagerBusinessItems.EMERALD_NUGGET.get())
                 return false;
 
             if (!cursorStack.isEmpty()) {
