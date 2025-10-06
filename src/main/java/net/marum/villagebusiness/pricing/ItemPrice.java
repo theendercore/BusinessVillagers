@@ -37,6 +37,7 @@ public class ItemPrice {
         this.cooldown = 120;
     }
 
+    @SuppressWarnings("unused")
     public ItemPrice(Item item, int price, int sellAmount, int saleChance, int requestChance) {
         this.item = item;
         this.sellAmount = sellAmount;
@@ -82,7 +83,7 @@ public class ItemPrice {
 
     public int getCooldown(int priceSetting) {
         return switch (priceSetting) {
-            case 0 -> (int) Math.ceil(cooldown / 2);
+            case 0 -> (int) Math.ceil(cooldown / 2f);
             case 2 -> cooldown * 4;
             default -> cooldown;
         };
@@ -91,7 +92,7 @@ public class ItemPrice {
 
     public int getSaleChance(int priceSetting) {
         return switch (priceSetting) {
-            case 0 -> Math.round((100 + saleChance * 2) / 3);
+            case 0 -> Math.round((100 + saleChance * 2f) / 3f);
             case 2 -> saleChance / 4;
             default -> saleChance;
         };
