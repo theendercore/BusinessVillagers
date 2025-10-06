@@ -416,11 +416,7 @@ public class SalesStandBlockEntity extends BlockEntity implements ExtendedScreen
             return;
         }
 
-        if (ItemPrices.priceList.containsKey(stack.getItem())) {
-            itemPrice = ItemPrices.priceList.get(stack.getItem());
-        } else {
-            itemPrice = null;
-        }
+        itemPrice = ItemPrices.getPrices().getOrDefault(stack.getItem(), null);
     }
 
     @Override

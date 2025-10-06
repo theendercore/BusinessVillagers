@@ -1,5 +1,6 @@
 plugins {
 	id 'fabric-loom' version '1.11-SNAPSHOT'
+    id 'org.jetbrains.kotlin.jvm'
 //	id 'maven-publish'
 }
 
@@ -11,11 +12,14 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+    maven {
+        name = "FzzyMaven"
+        url = "https://maven.fzzyhmstrs.me/"
+    }
+    maven {
+        url = "https://thedarkcolour.github.io/KotlinForForge/"
+    }
+    mavenCentral()
 }
 
 fabricApi {
@@ -32,6 +36,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    modImplementation "me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 processResources {
@@ -52,14 +59,15 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
+}
+kotlin {
+    jvmToolchain(21)
 }
 
 /*

@@ -1,5 +1,6 @@
 package net.marum.villagebusiness.pricing;
 
+import net.marum.villagebusiness.config.VillageBusinessConfig;
 import net.minecraft.world.item.Item;
 
 public class ItemPrice {
@@ -10,41 +11,13 @@ public class ItemPrice {
     private final int requestChance;
     private final int cooldown;
 
-    public ItemPrice(Item item, int price) {
+    public ItemPrice(Item item, VillageBusinessConfig.PriceInfo info) {
         this.item = item;
-        this.price = price;
-        this.sellAmount = 1;
-        this.saleChance = 50;
-        this.requestChance = 10;
-        this.cooldown = 120;
-    }
-
-    public ItemPrice(Item item, int price, int sellAmount) {
-        this.item = item;
-        this.sellAmount = sellAmount;
-        this.price = price;
-        this.saleChance = 50;
-        this.requestChance = 10;
-        this.cooldown = 120;
-    }
-
-    public ItemPrice(Item item, int price, int sellAmount, int saleChance) {
-        this.item = item;
-        this.sellAmount = sellAmount;
-        this.price = price;
-        this.saleChance = saleChance;
-        this.requestChance = 10;
-        this.cooldown = 120;
-    }
-
-    @SuppressWarnings("unused")
-    public ItemPrice(Item item, int price, int sellAmount, int saleChance, int requestChance) {
-        this.item = item;
-        this.sellAmount = sellAmount;
-        this.price = price;
-        this.saleChance = saleChance;
-        this.requestChance = requestChance;
-        this.cooldown = 120;
+        this.price = info.price;
+        this.sellAmount = info.sellAmount;
+        this.saleChance = info.saleChance;
+        this.requestChance = info.requestChance;
+        this.cooldown = info.cooldown;
     }
 
     public ItemPrice(Item item, int price, int sellAmount, int saleChance, int requestChance, int cooldown) {
@@ -74,7 +47,6 @@ public class ItemPrice {
                 }
                 yield price / 2;
             }
-            case 1 -> price;
             case 2 -> price * 2;
             default -> price;
         };

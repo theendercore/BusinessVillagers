@@ -304,7 +304,7 @@ public class RequestStandBlockEntity extends BlockEntity implements ExtendedScre
             CompoundTag nbt = new CompoundTag();
             villager.addAdditionalSaveData(nbt);
             CompoundTag business = nbt.getCompound("BusinessRecords");
-            long timeMultiplier = VillageBusiness.CONFIG.getOrDefault("request_time_multiplier", 2);
+            var timeMultiplier = VillageBusiness.CONFIG.requestTimeMultiplier.get();
             business.putLong(getSellingItemID(), System.currentTimeMillis() + (int) (SUCCESSFUL_PURCHASE_COOLDOWN * 1000 * itemPrice.getCooldown(this.priceSetting) * timeMultiplier));
             nbt.put("BusinessRecords", business);
             villager.readAdditionalSaveData(nbt);
@@ -402,10 +402,10 @@ public class RequestStandBlockEntity extends BlockEntity implements ExtendedScre
             return;
         }
 
-        itemPrice = ItemPrices.priceList.getOrDefault(stack.getItem(), null);
+        itemPrice = ItemPrices.getPrices().getOrDefault(stack.getItem(), null);
 
-        priceMultiplier = VillageBusiness.CONFIG.getOrDefault("request_price_multiplier", 1f);
-        cooldownMultiplier = VillageBusiness.CONFIG.getOrDefault("request_cooldown_multiplier", 1f);
+        priceMultiplier = VillageBusiness.CONFIG.requestPriceMultiplier.get();
+        cooldownMultiplier = VillageBusiness.CONFIG.requestCooldownMultiplier.get();
     }
 
     @Override
