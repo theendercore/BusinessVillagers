@@ -5,7 +5,7 @@ license="MIT"
 
 [[mods]] #mandatory
 modId="village_business" #mandatory
-version="1.1.1" #mandatory
+version="1.1.0" #mandatory
 displayName="Village Business" #mandatory
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
@@ -29,3 +29,10 @@ config="village_business.mixins.json"
     versionRange="[1.21,)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.village_business]]
+    modId = "fzzy_config"
+    type = "required"
+    versionRange = "[0.7.2,)"
+    ordering = "NONE"
+    side = "CLIENT"
